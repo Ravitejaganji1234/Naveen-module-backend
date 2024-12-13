@@ -42,8 +42,8 @@ public class EmailService {
                 "Duration: "+leaveRequest.getDuration()+" Days"+"\n"+
                 "Comments: "+(leaveRequest.getComments()!=null ? leaveRequest.getComments():"N/A")+"\n\n"+
                 "Please click one of the options below:\n"+
-                "[Approve Leave](http://localhost:8080/leave/approve/"+leaveRequest.getId()+")\n"+
-                "[Reject Leave](http://localhost:8080/leave/reject/"+leaveRequest.getId()+")\n\n"+
+                "[Approve Leave](https://naveen-module.azurewebsites.net/leave/approve/"+leaveRequest.getId()+")\n"+
+                "[Reject Leave](https://naveen-module.azurewebsites.net/leave/reject/"+leaveRequest.getId()+")\n\n"+
                 "Regards,\n"+
                 leaveRequest.getLastName()+" "+leaveRequest.getFirstName();
 

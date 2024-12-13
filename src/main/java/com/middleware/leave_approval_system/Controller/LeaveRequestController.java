@@ -1,11 +1,11 @@
 package com.middleware.leave_approval_system.Controller;
 
+import com.azure.storage.blob.*;
+import com.azure.storage.blob.models.BlobProperties;
 import com.middleware.leave_approval_system.Entity.LeaveRequest;
 import com.middleware.leave_approval_system.Exception.ResourceNotFoundException;
 import com.middleware.leave_approval_system.Service.LeaveRequestServiceImpl;
 import com.middleware.leave_approval_system.Util.HolidaysUtil;
-import com.azure.storage.blob.BlobClient;
-import com.azure.storage.blob.BlobClientBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -32,7 +32,7 @@ public class LeaveRequestController {
     @Value("${azure.storage.blob.container-name}")
     private String blobContainerName;
 
-    @PostMapping("/submit")
+    @PostMapping(value = "/submit", produces = "application/json")
     public ResponseEntity<?> submitLeaveRequest(
             @RequestParam("employeeId") String employeeId,
             @RequestParam("firstName") String firstName,
@@ -107,25 +107,25 @@ public class LeaveRequestController {
         return null;
     }
 
-    @PutMapping("/approve/{id}")
+    @PutMapping(value = "/approve/{id}", produces = "application/json")
     public ResponseEntity<String> approveLeaveRequest(@PathVariable Long id) {
         leaveRequestServiceImpl.approveLeaveRequest(id);
         return ResponseEntity.ok("Leave Request Approved");
     }
 
-    @PutMapping("/reject/{id}/{leaveReason}")
+    @PutMapping(value = "/reject/{id}/{leaveReason}", produces = "application/json")
     public ResponseEntity<String> rejectLeaveRequest(@PathVariable Long id, @PathVariable String leaveReason) {
         leaveRequestServiceImpl.rejectLeaveRequest(id, leaveReason);
         return ResponseEntity.ok("Leave Request Rejected with Reason: " + leaveReason);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping(value = "/update/{id}", produces = "application/json")
     public ResponseEntity<LeaveRequest> updateLeaveRequest(@PathVariable Long id, @RequestBody LeaveRequest leaveRequest) {
         LeaveRequest updatedLeaveRequest = leaveRequestServiceImpl.updateLeaveRequest(id, leaveRequest);
         return ResponseEntity.ok(updatedLeaveRequest);
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping(value = "/delete/{id}", produces = "application/json")
     public ResponseEntity<String> deleteLeaveRequest(@PathVariable Long id) {
         String deleteRequest = leaveRequestServiceImpl.deleteLeaveRequest(id);
         return ResponseEntity.ok(deleteRequest);
@@ -140,7 +140,7 @@ public class LeaveRequestController {
         return new ResponseEntity<>(leaveRequests, HttpStatus.OK);
     }
 
-    @GetMapping("/{status}/manager/{managerId}")
+    @GetMapping(value = "/{status}/manager/{managerId}", produces = "application/json")
     public ResponseEntity<List<LeaveRequest>> getLeaveRequestsByStatus(@PathVariable String status, @PathVariable String managerId) {
         LeaveRequest.LeaveStatus leaveStatus;
         try {
@@ -154,6 +154,44 @@ public class LeaveRequestController {
         }
         return ResponseEntity.ok(leaveRequests);
     }
+
+    @GetMapping("/fileSize")
+    public ResponseEntity<Map<String, Long>> getFileSize(@RequestParam String fileName) {
+        try {
+            // Create a BlobServiceClient using the connection string
+            BlobServiceClient blobServiceClient = new BlobServiceClientBuilder()
+                    .connectionString(blobConnectionString)
+                    .buildClient();
+
+            // Get the container client
+            BlobContainerClient containerClient = blobServiceClient.getBlobContainerClient(blobContainerName);
+
+            // Check if the blob exists
+            BlobClient blobClient = containerClient.getBlobClient(fileName);
+
+            if (blobClient.exists()) {
+                // Fetch blob properties to get the file size
+                BlobProperties properties = blobClient.getProperties();
+                long fileSize = properties.getBlobSize(); // File size in bytes
+
+                // Prepare response
+                Map<String, Long> response = new HashMap<>();
+                response.put("size", fileSize);
+                return ResponseEntity.ok(response);
+            } else {
+                // If the file does not exist, return size as 0 with an appropriate message
+                Map<String, Long> response = new HashMap<>();
+                response.put("size", 0L);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+        } catch (Exception e) {
+            // Handle any errors that occur
+            Map<String, Long> response = new HashMap<>();
+            response.put("size", 0L); // Error occurred, size is 0
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
 
     // Additional methods (similar to original) remain unchanged...
 }
