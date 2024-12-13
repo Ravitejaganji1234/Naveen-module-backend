@@ -22,9 +22,6 @@ public class LeaveRequestServiceImpl implements LeaveRequestService {
     @Autowired
     private EmailService emailService;
 
-    @Value("${file.upload-dir}")
-    private String uploadDir;
-
     // Injecting LeaveRequestRepo for database operations
     @Autowired
     private LeaveRequestRepo leaveRequestRepository;
