@@ -21,6 +21,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/leave")
+@CrossOrigin(origins = "https://talebts-frontend.azurewebsites.net")
 public class LeaveRequestController {
 
     @Autowired
