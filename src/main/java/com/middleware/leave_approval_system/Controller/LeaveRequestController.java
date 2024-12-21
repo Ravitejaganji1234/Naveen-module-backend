@@ -21,7 +21,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/leave")
-@CrossOrigin(origins = "https://talebts-frontend.azurewebsites.net")
 public class LeaveRequestController {
 
     @Autowired
@@ -108,13 +107,13 @@ public class LeaveRequestController {
         return null;
     }
 
-    @PutMapping(value = "/approve/{id}", produces = "application/json")
+    @PutMapping(value = "/approve/{id}")
     public ResponseEntity<String> approveLeaveRequest(@PathVariable Long id) {
         leaveRequestServiceImpl.approveLeaveRequest(id);
         return ResponseEntity.ok("Leave Request Approved");
     }
 
-    @PutMapping(value = "/reject/{id}/{leaveReason}", produces = "application/json")
+    @PutMapping(value = "/reject/{id}/{leaveReason}")
     public ResponseEntity<String> rejectLeaveRequest(@PathVariable Long id, @PathVariable String leaveReason) {
         leaveRequestServiceImpl.rejectLeaveRequest(id, leaveReason);
         return ResponseEntity.ok("Leave Request Rejected with Reason: " + leaveReason);
@@ -126,7 +125,7 @@ public class LeaveRequestController {
         return ResponseEntity.ok(updatedLeaveRequest);
     }
 
-    @DeleteMapping(value = "/delete/{id}", produces = "application/json")
+    @DeleteMapping(value = "/delete/{id}")
     public ResponseEntity<String> deleteLeaveRequest(@PathVariable Long id) {
         String deleteRequest = leaveRequestServiceImpl.deleteLeaveRequest(id);
         return ResponseEntity.ok(deleteRequest);
