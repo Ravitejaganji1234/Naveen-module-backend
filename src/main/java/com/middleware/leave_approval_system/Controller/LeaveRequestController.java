@@ -222,5 +222,13 @@ public class LeaveRequestController {
         List<LeaveRequest> leaveRequest = leaveRequestServiceImpl.getAllEmployeeId(employeeId);
         return ResponseEntity.ok(leaveRequest);
     }
+    @GetMapping(value = "/manager/{managerId}", produces = "application/json")
+    public ResponseEntity<List<LeaveRequest>> getAllMangerIds(@PathVariable String managerId) {
+        List<LeaveRequest> leaveRequest = leaveRequestServiceImpl.getAllManagerId(managerId);
+        if (leaveRequest.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(leaveRequest);
+        }
+        return new ResponseEntity<>(leaveRequest, HttpStatus.OK);
+    }
 
 }
