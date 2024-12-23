@@ -232,6 +232,4 @@ public class LeaveRequestController {
         List<LeaveRequest> leaveRequest = leaveRequestServiceImpl.getAllEmployeeId(employeeId);
         return ResponseEntity.ok(leaveRequest);
     }
-
-
 }
